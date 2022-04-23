@@ -1,0 +1,3 @@
+[submodule "shared-file-format"]
+	path = shared-file-format
+	url = git@gitlab2.informatik.uni-wuerzburg.de:document-recognition/shared-file-format.git
