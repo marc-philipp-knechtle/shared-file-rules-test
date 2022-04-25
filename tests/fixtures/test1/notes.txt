@@ -1,0 +1,6 @@
+from tables/pseudoscanned/imgs
+
+and
+
+tables/pseudoscanned/paperbost-json-v0.3
+
