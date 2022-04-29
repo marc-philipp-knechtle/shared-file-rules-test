@@ -1,0 +1,26 @@
+ideen:
+
+Generelle aufteilung des workflows:
+
+ML approach -> Table Detection with Rules -> Cell Detection with Rules -> Structure Recovery with Rules
+
+zuerst einmal nachimplementierung von shigarov example, aber die regeln bauen ja ebenfalls auf parametern auf.
+Diese parameter dann auch für andere Regeln wichtig. z.b. wie viel abstand ist wichtig damit eine ansammlung von wörtern als cell gilt?
+
+
+Problem:
+    Wie verwende ich den ML approach dann später in den Regeln?
+    Confidence für ML model angeben!
+    Unterschiedlich in den einzelnen Stages
+
+    Table Detection:
+        Einfach den Average aus beiden Methoden verwenden.
+        Nochmal später anpassen wenn dann alle anderen sachen extrahiert sind: passt der originale approach überhaupt noch?
+
+    Cell Detection:
+        Neu erkannte Zellen werden einfach mit aufgenommen - ML model oft nicht in der Lage mit object detection cells zu erkennen
+        bestehende grenzen werden wie die große cell bounding box einfach angepasst.
+        komplett gelöscht wird nichts
+
+    structure Recognition:
+        ML model gibt ursprünglich assigned confidence. Eine Regel kann die confidence ändern. Neue ML models die dasselbe sagen erhöhen wieder diese confidence.
