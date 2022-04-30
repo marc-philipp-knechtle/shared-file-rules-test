@@ -1,3 +1,4 @@
+import random
 import sys
 
 import pytesseract
@@ -232,7 +233,7 @@ def draw_bounding_boxes_from_dict(imagedata, img):
 
         # filter all empty strings and strings consisting of not alphanumeric characters
         if len(text.strip()) > 0 and not (len(text.strip()) == 1 and not text.strip().isalnum()):
-            cv2.rectangle(img, (x, y), (x + width, y + height), (0, 255, 0), 2)
+            cv2.rectangle(img, (x, y), (x + width, y + height), random.choices(range(256), k=3), 2)
 
     return img
 
