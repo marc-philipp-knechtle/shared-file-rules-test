@@ -132,7 +132,6 @@ def merge_to_text_blocks(imagedata: dict) -> dict:
                 # todo change this with a proper mechanism
                 imagedata['level'].append(1)
 
-                break
 
     # remove all duplicates
     indexes_to_remove: set = set(indexes_to_remove)
