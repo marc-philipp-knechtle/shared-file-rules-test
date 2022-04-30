@@ -65,12 +65,13 @@ def data_recognition(image_file: str):
     # height
     # conf = ?
     # text = content
+    # line_num = ?
     imagedata: dict = pytesseract.image_to_data(img, output_type=Output.DICT)
     image_as_dataframe: DataFrame = pytesseract.image_to_data(img, output_type=Output.DATAFRAME)
 
     original_imagedata_dict = copy.deepcopy(imagedata)
     imagedata = filter_empty_imagedata(imagedata)
-    imagedata = merge_to_text_blocks(imagedata)
+    imagedata = merge_to_text_blocks(imagedata, count_of_called=1)
 
     visualize(img, imagedata)
     visualize(img, original_imagedata_dict)
@@ -94,11 +95,13 @@ def filter_empty_imagedata(imagedata: dict) -> dict:
     return imagedata
 
 
-def merge_to_text_blocks(imagedata: dict) -> dict:
+def merge_to_text_blocks(imagedata: dict, count_of_called: int) -> dict:
     """
     This method correlates to Section 2.2. in shigarov2016configurable
-    :return:
+    :return: the merged bounding boxes
     """
+    logger.info("Called merge_to_text_blocks for the " + str(count_of_called) + "th time.")
+
     boxes_count: int = len(imagedata['level'])
 
     indexes_to_remove = []
@@ -106,12 +109,17 @@ def merge_to_text_blocks(imagedata: dict) -> dict:
     p_1_count: int = 0
 
     for i in range(0, boxes_count):
+        # indexes already to be removed will be filtered out in the next stage.
+        if i in indexes_to_remove:
+            continue
         (x1, y1, width1, height1) = (
             imagedata['left'][i], imagedata['top'][i], imagedata['width'][i], imagedata['height'][i])
         text1: str = imagedata['text'][i]
 
         for j in range(0, boxes_count):
-            if j == i:
+            # don't compare equal indexes + don't compare indexes which are removed
+            # these who would theoretically match to those indexes will be filtered out in the next stage
+            if j == i or j in indexes_to_remove:
                 continue
             (x2, y2, width2, height2) = (
                 imagedata['left'][j], imagedata['top'][j], imagedata['width'][j], imagedata['height'][j])
@@ -131,7 +139,17 @@ def merge_to_text_blocks(imagedata: dict) -> dict:
                 imagedata['text'].append(text1 + text2)
                 # todo change this with a proper mechanism
                 imagedata['level'].append(1)
+                imagedata['page_num'].append(1)
+                imagedata['block_num'].append(1)
+                imagedata['par_num'].append(1)
+                imagedata['word_num'].append(1)
+                imagedata['conf'].append(1)
+                imagedata['line_num'].append(1)
 
+                # calling break here to avoid the creation of bounding box combination which already exist
+                # in another form
+                # These will filter out if that method has been run multiple times.
+                break
 
     # remove all duplicates
     indexes_to_remove: set = set(indexes_to_remove)
@@ -139,6 +157,9 @@ def merge_to_text_blocks(imagedata: dict) -> dict:
         imagedata = remove_index(imagedata, index)
 
     logger.info("Performed " + str(p_1_count) + " P_1 merge operations.")
+
+    if len(indexes_to_remove) != 0:
+        imagedata = merge_to_text_blocks(imagedata, count_of_called=count_of_called + 1)
 
     return imagedata
 
@@ -159,7 +180,7 @@ def p_1_word_spacing(x1, y1, width1, height1, x2, y2, width2, height2) -> bool:
     # no - this value is also influenced by the size of the table
     # the cells may mave a smaller difference to their neighbour (if taken relative to the image size) if the table is big
     # maybe make this value dependent on the general font size
-    if abs(y1 - y2) < 10:
+    if abs(y1 - y2) < 20:
         return True
     return False
 
@@ -216,7 +237,7 @@ def remove_index(dct: dict, index: int) -> dict:
     this removes the entry for every key at index xy
     :return: modified dict
     """
-    logger.debug("Deleted element at index " + str(index))
+    logger.debug("Called to delete element at index: " + str(index))
     for key in dct:
         del dct[key][index]
 
