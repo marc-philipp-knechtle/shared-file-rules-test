@@ -67,6 +67,7 @@ def data_recognition(image_file: str):
     # text = content
     # line_num = ?
     imagedata: dict = pytesseract.image_to_data(img, output_type=Output.DICT)
+    # todo write this with pandas dataframe instead of simple dictionary
     image_as_dataframe: DataFrame = pytesseract.image_to_data(img, output_type=Output.DATAFRAME)
 
     original_imagedata_dict = copy.deepcopy(imagedata)
@@ -125,7 +126,8 @@ def merge_to_text_blocks(imagedata: dict, count_of_called: int) -> dict:
                 imagedata['left'][j], imagedata['top'][j], imagedata['width'][j], imagedata['height'][j])
             text2: str = imagedata['text'][j]
 
-            if p_1_word_spacing(x1, y1, width1, height1, x2, y2, width2, height2):
+            if p_1_word_spacing(y1, y2) \
+                    and p_2_vertical_projections(imagedata, x1, width1, x2, width2):
                 logger.debug("Merging bboxes with content text1: [" + text1 + "] and text2: [" + text2 + "]")
                 p_1_count += 1
 
@@ -164,7 +166,7 @@ def merge_to_text_blocks(imagedata: dict, count_of_called: int) -> dict:
     return imagedata
 
 
-def p_1_word_spacing(x1, y1, width1, height1, x2, y2, width2, height2) -> bool:
+def p_1_word_spacing(y1, y2) -> bool:
     """
     See corresponding rule in shigarov2016configurable
     on page 2
@@ -180,13 +182,70 @@ def p_1_word_spacing(x1, y1, width1, height1, x2, y2, width2, height2) -> bool:
     # no - this value is also influenced by the size of the table
     # the cells may mave a smaller difference to their neighbour (if taken relative to the image size) if the table is big
     # maybe make this value dependent on the general font size
-    if abs(y1 - y2) < 20:
+    if abs(y1 - y2) < 50:
         return True
     return False
 
 
-def p_2_vertical_projections():
-    pass
+def p_2_vertical_projections(imagedata: dict, x_1, width_1, x_2, width_2) -> bool:
+    """
+    see p2 in shigarov2016configurable
+
+    p2 from paper:
+    there is a configurable intersection of their vertical projections
+
+    from corresponding documentation in tabbypdf:
+    Vergewissern sie sich dass der erste Teil links vom zweiten liegt + sich deren projektionen
+    (in die vertikale richtung) überschneiden.
+
+    todo
+    why is it necessary that the first part is left of the right?  todo currently not implemented
+
+    why is it necessary that there is a intersection of their projections?
+    if there arent any common projection elements - these are elements which are horizontically bound together.
+    These could be theoretically at the other end of the table.
+
+    :return:
+    """
+    vertical_projections_1: list = _get_vertical_projections(imagedata, x_1, width_1)
+    vertical_projections_2: list = _get_vertical_projections(imagedata, x_2, width_2)
+
+    if not set(vertical_projections_1).isdisjoint(vertical_projections_2):
+        return True
+    return False
+
+
+def _get_vertical_projections(imagedata: dict, x: int, width: int) -> list:
+    vertical_projections: list = []
+    range_to_match = range(x, x + width)
+    for i in range(len(imagedata['level'])):
+        x_1: int = imagedata['left'][i]
+        width_1: int = imagedata['width'][i]
+
+        if _range_subset(range(x_1, x_1 + width_1), range_to_match):
+            vertical_projections.append(i)
+
+    return vertical_projections
+
+
+def _range_subset(range1: range, range2: range) -> bool:
+    """
+    Checks whether range1 is a partial subset of range2.
+
+    :param range1:
+    :param range2:
+    :return:
+    """
+    if not range1:
+        return True
+    if not range2:
+        return False
+
+    for element in range1:
+        if element in range2:
+            return True
+
+    return False
 
 
 def p_3_line_spacing():
