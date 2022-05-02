@@ -13,8 +13,10 @@ import copy
 logger.remove()
 logger.add(sys.stderr, level="DEBUG")
 
-IMAGE_FILE = "tests/fixtures/images/1.6.scan-1.png"
+IMAGE_FILE = "tests/fixtures/images/pubtabnet-example(1).png"
 annotation_file = "tests/fixtures/test2/1.2.scan-1.xml.json"
+
+P_1_HORIZONTAL_WORD_SPACING_DISTANCE: int = 20
 
 
 def character_recognition(image_file: str):
@@ -75,7 +77,6 @@ def data_recognition(image_file: str):
     imagedata = merge_to_text_blocks(imagedata, count_of_called=1)
 
     visualize(img, imagedata)
-    visualize(img, original_imagedata_dict)
 
 
 def filter_empty_imagedata(imagedata: dict) -> dict:
@@ -182,7 +183,7 @@ def p_1_word_spacing(y1, y2) -> bool:
     # no - this value is also influenced by the size of the table
     # the cells may mave a smaller difference to their neighbour (if taken relative to the image size) if the table is big
     # maybe make this value dependent on the general font size
-    if abs(y1 - y2) < 50:
+    if abs(y1 - y2) < P_1_HORIZONTAL_WORD_SPACING_DISTANCE:
         return True
     return False
 
