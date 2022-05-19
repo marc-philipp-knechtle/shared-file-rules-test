@@ -17,6 +17,7 @@ IMAGE_FILE = "tests/fixtures/images/sciTSR-example(2).png"
 annotation_file = "tests/fixtures/test2/1.2.scan-1.xml.json"
 
 P_1_HORIZONTAL_WORD_SPACING_DISTANCE: int = 0
+P_3_VERTICAL_LINE_SPACING_DISTANCE: int = 20
 
 
 def character_recognition(image_file: str):
@@ -73,10 +74,12 @@ def data_recognition(image_file: str):
     image_as_dataframe: DataFrame = pytesseract.image_to_data(img, output_type=Output.DATAFRAME)
 
     original_imagedata_dict = copy.deepcopy(imagedata)
+    original_image = copy.deepcopy(img)
+
     imagedata = filter_empty_imagedata(imagedata)
     imagedata = merge_to_text_blocks(imagedata, count_of_called=1)
 
-    visualize(img, imagedata)
+    visualize_original_and_processed(original_image, img, original_imagedata_dict, imagedata)
 
 
 def filter_empty_imagedata(imagedata: dict) -> dict:
@@ -87,6 +90,7 @@ def filter_empty_imagedata(imagedata: dict) -> dict:
             continue
         else:
             indexes_to_remove.append(i)
+            logger.debug("Removing element at index: [" + str(i) + "] because of empty text representation.")
 
     # remove all duplicate values by converting to set
     indexes_to_remove: set = set(indexes_to_remove)
@@ -109,6 +113,7 @@ def merge_to_text_blocks(imagedata: dict, count_of_called: int) -> dict:
     indexes_to_remove = []
 
     p_1_count: int = 0
+    p_3_count: int = 0
 
     for i in range(0, boxes_count):
         # indexes already to be removed will be filtered out in the next stage.
@@ -129,7 +134,9 @@ def merge_to_text_blocks(imagedata: dict, count_of_called: int) -> dict:
 
             if p_1_word_spacing(y1, y2) \
                     and p_2_vertical_projections(imagedata, x1, width1, x2, width2):
-                logger.debug("Merging bboxes with content text1: [" + text1 + "] and text2: [" + text2 + "]")
+                logger.debug(
+                    "Merging bboxes with content text1: [" + text1 + "] and "
+                                                                     "text2: [" + text2 + "] because of p_1 and p_2")
                 p_1_count += 1
 
                 merged_box: list = _merge_boxes([x1, y1, width1, height1], [x2, y2, width2, height2])
@@ -154,12 +161,40 @@ def merge_to_text_blocks(imagedata: dict, count_of_called: int) -> dict:
                 # These will filter out if that method has been run multiple times.
                 break
 
+            if p_3_line_spacing(x1, x2) \
+                    and p_4_horizontal_projections(imagedata, y1, height1, y2, height2):
+                logger.debug(
+                    "Merging bboxes with content text1: [" + text1 + "] and "
+                                                                     "text2: [" + text2 + "] because of p_3 and p_4")
+
+                merged_box: list = _merge_boxes([x1, y1, width1, height1], [x2, y2, width2, height2])
+                indexes_to_remove.append(i)
+                indexes_to_remove.append(j)
+                imagedata['left'].append(merged_box[0])
+                imagedata['top'].append(merged_box[1])
+                imagedata['width'].append(merged_box[2])
+                imagedata['height'].append(merged_box[3])
+                imagedata['text'].append(text1 + text2)
+                # todo change this with a proper mechanism
+                imagedata['level'].append(1)
+                imagedata['page_num'].append(1)
+                imagedata['block_num'].append(1)
+                imagedata['par_num'].append(1)
+                imagedata['word_num'].append(1)
+                imagedata['conf'].append(1)
+                imagedata['line_num'].append(1)
+
+                p_3_count += 1
+
+                break
+
     # remove all duplicates
     indexes_to_remove: set = set(indexes_to_remove)
     for index in sorted(indexes_to_remove, reverse=True):
         imagedata = remove_index(imagedata, index)
 
-    logger.info("Performed " + str(p_1_count) + " P_1 merge operations.")
+    logger.info("Performed " + str(p_1_count) + " P_1/P_2 merge operations.")
+    logger.info("Performed " + str(p_3_count) + " P_3/P_4 merge operations.")
 
     if len(indexes_to_remove) != 0:
         imagedata = merge_to_text_blocks(imagedata, count_of_called=count_of_called + 1)
@@ -181,7 +216,8 @@ def p_1_word_spacing(y1, y2) -> bool:
     # todo make this absolute value to a relative value compared to image height
     # question: is a relative to total size index useful?
     # no - this value is also influenced by the size of the table
-    # the cells may mave a smaller difference to their neighbour (if taken relative to the image size) if the table is big
+    # the cells may mave a smaller difference to their neighbour
+    # (if taken relative to the image size) if the table is big
     # maybe make this value dependent on the general font size
     if abs(y1 - y2) < P_1_HORIZONTAL_WORD_SPACING_DISTANCE:
         return True
@@ -216,17 +252,45 @@ def p_2_vertical_projections(imagedata: dict, x_1, width_1, x_2, width_2) -> boo
     return False
 
 
+def p_3_line_spacing(x1, x2) -> bool:
+    if abs(x1 - x2) < P_3_VERTICAL_LINE_SPACING_DISTANCE:
+        return True
+    return False
+
+
+def p_4_horizontal_projections(imagedata: dict, y_1, height_1, y_2, height_2) -> bool:
+    horizontal_projections_1: list = _get_horizontal_projections(imagedata, y_1, height_1)
+    horizontal_projections_2: list = _get_horizontal_projections(imagedata, y_2, height_2)
+
+    if not set(horizontal_projections_1).isdisjoint(horizontal_projections_2):
+        return True
+    return False
+
+
 def _get_vertical_projections(imagedata: dict, x: int, width: int) -> list:
-    vertical_projections: list = []
-    range_to_match = range(x, x + width)
+    vertical_projection_indexes: list = []
+    range_to_match: range = range(x, x + width)
     for i in range(len(imagedata['level'])):
         x_1: int = imagedata['left'][i]
         width_1: int = imagedata['width'][i]
 
         if _range_subset(range(x_1, x_1 + width_1), range_to_match):
-            vertical_projections.append(i)
+            vertical_projection_indexes.append(i)
 
-    return vertical_projections
+    return vertical_projection_indexes
+
+
+def _get_horizontal_projections(imagedata: dict, y: int, height: int) -> list:
+    horizontal_projection_indexes: list = []
+    range_to_match: range = range(y, y + height)
+    for i in range(len(imagedata['level'])):
+        y_1: int = imagedata['top'][i]
+        height_1: int = imagedata['height'][i]
+
+        if _range_subset(range(y_1, y_1 + height_1), range_to_match):
+            horizontal_projection_indexes.append(i)
+
+    return horizontal_projection_indexes
 
 
 def _range_subset(range1: range, range2: range) -> bool:
@@ -247,14 +311,6 @@ def _range_subset(range1: range, range2: range) -> bool:
             return True
 
     return False
-
-
-def p_3_line_spacing():
-    pass
-
-
-def p_4_horizontal_projections():
-    pass
 
 
 def _merge_boxes(box1, box2) -> list:
@@ -297,7 +353,6 @@ def remove_index(dct: dict, index: int) -> dict:
     this removes the entry for every key at index xy
     :return: modified dict
     """
-    logger.debug("Called to delete element at index: " + str(index))
     for key in dct:
         del dct[key][index]
 
@@ -328,6 +383,23 @@ def visualize(image, imagedata):
     cv2.waitKey(0)
 
     cv2.destroyWindow('img')
+
+
+def visualize_original_and_processed(original_image, processed_image, imagedata_original, imagedata_processed):
+    image_original = draw_bounding_boxes_from_dict(imagedata_original, original_image)
+    image_processed = draw_bounding_boxes_from_dict(imagedata_processed, processed_image)
+
+    cv2.namedWindow('original', cv2.WINDOW_KEEPRATIO)
+    cv2.imshow('original', image_original)
+    cv2.resizeWindow('original', 900, 900)
+
+    cv2.namedWindow('processed', cv2.WINDOW_KEEPRATIO)
+    cv2.imshow('processed', image_processed)
+    cv2.resizeWindow('processed', 900, 900)
+
+    # waits for any keypress
+    cv2.waitKey(0)
+    cv2.destroyWindow('original')
 
 
 if __name__ == "__main__":
