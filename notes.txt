@@ -24,3 +24,22 @@ Problem:
 
     structure Recognition:
         ML model gibt ursprünglich assigned confidence. Eine Regel kann die confidence ändern. Neue ML models die dasselbe sagen erhöhen wieder diese confidence.
+
+
+paddleocr setup
+
+    prerequisities:
+        - conda is installed and on path
+
+
+    conda create --name paddle_env python=3.7 --channel https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free/
+    conda activate paddle_env
+
+    # Install paddleocr, version 2.5+ is recommended
+    pip3 install "paddleocr>=2.5"
+    # Install layoutparser (if you do not use the layout analysis, you can skip it)
+    pip3 install -U https://paddleocr.bj.bcebos.com/whl/layoutparser-0.0.0-py3-none-any.whl
+    # Install the DocVQA dependency package paddlenlp (if you do not use the DocVQA, you can skip it)
+    pip install paddlenlp
+
+    pip install paddlepaddle
