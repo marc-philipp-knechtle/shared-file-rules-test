@@ -13,10 +13,10 @@ import copy
 logger.remove()
 logger.add(sys.stderr, level="DEBUG")
 
-IMAGE_FILE = "tests/fixtures/images/pubtabnet-example(1).png"
+IMAGE_FILE = "tests/fixtures/images/sciTSR-example(2).png"
 annotation_file = "tests/fixtures/test2/1.2.scan-1.xml.json"
 
-P_1_HORIZONTAL_WORD_SPACING_DISTANCE: int = 20
+P_1_HORIZONTAL_WORD_SPACING_DISTANCE: int = 0
 
 
 def character_recognition(image_file: str):
