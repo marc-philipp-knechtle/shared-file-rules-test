@@ -16,7 +16,10 @@ IMAGE_FILE = "tests/fixtures/images/1.4.scan-1.png"
 annotation_file = "tests/fixtures/test2/1.2.scan-1.xml.json"
 
 P_1_HORIZONTAL_WORD_SPACING_DISTANCE: int = 0
-P_3_VERTICAL_LINE_SPACING_DISTANCE: int = 4
+P_3_VERTICAL_LINE_SPACING_DISTANCE: int = 0
+
+P_1_DIVISION_FACTOR: float = 0.5
+P_3_DIVISION_FACTOR: float = 0.5
 
 
 def character_recognition(image_file: str):
@@ -52,26 +55,7 @@ def character_recognition(image_file: str):
     cv2.waitKey(0)
 
 
-def data_recognition(image_file: str):
-    img = cv2.imread(image_file)
-
-    # dict image data contains of the following keys
-    # level = level of the box: possible values: (1)page, (2)block, (3)paragraph, (4)line, (5)word
-    # page_num = page number
-    # block_num = ?
-    # par_num = ?
-    # word_num = ?
-    # left = x coordinate
-    # top = y coordinate
-    # width
-    # height
-    # conf = ?
-    # text = content
-    # line_num = ?
-    imagedata: dict = pytesseract.image_to_data(img, output_type=Output.DICT)
-    # todo write this with pandas dataframe instead of simple dictionary
-    # image_as_dataframe: DataFrame = pytesseract.image_to_data(img, output_type=Output.DATAFRAME)
-
+def data_recognition(imagedata: dict, img):
     original_imagedata_dict = copy.deepcopy(imagedata)
     original_image = copy.deepcopy(img)
 
@@ -419,15 +403,71 @@ def visualize_original_and_processed(original_image, processed_image, imagedata_
     cv2.destroyWindow('original')
 
 
+def get_average_cell_height(imagedata: dict):
+    pass
+
+
+def get_average_cell_width(imagedata: dict) -> int:
+    imagedata_filtered = filter_empty_imagedata(imagedata)
+    total_width: int = 0
+    for i in range(len(imagedata_filtered['level'])):
+        total_width += imagedata_filtered['width'][i]
+    # noinspection PyTypeChecker
+    return round(total_width / len(imagedata_filtered['level']))
+
+
+def get_average_cell_height(imagedata: dict) -> int:
+    imagedata_filtered = filter_empty_imagedata(imagedata)
+    total_height: int = 0
+    for i in range(len(imagedata_filtered['level'])):
+        total_height += imagedata_filtered['height'][i]
+    # noinspection PyTypeChecker
+    return round(total_height / len(imagedata_filtered['level']))
+
+
+def determine_horizontal_spacing_distance(imagedata: dict) -> int:
+    average_cell_width = get_average_cell_width(imagedata)
+    # noinspection PyTypeChecker
+    return round(average_cell_width/P_3_DIVISION_FACTOR)
+
+
+def determine_vertical_spacing_distance(imagedata: dict) -> int:
+    average_cell_height = get_average_cell_height(imagedata)
+    # noinspection PyTypeChecker
+    return round(average_cell_height/P_1_DIVISION_FACTOR)
+
+
+def get_imagedata(image_filename: str) -> dict:
+    img = cv2.imread(image_filename)
+
+    # dict image data contains of the following keys
+    # level = level of the box: possible values: (1)page, (2)block, (3)paragraph, (4)line, (5)word
+    # page_num = page number
+    # block_num = ?
+    # par_num = ?
+    # word_num = ?
+    # left = x coordinate
+    # top = y coordinate
+    # width
+    # height
+    # conf = ?
+    # text = content
+    # line_num = ?
+    imagedata: dict = pytesseract.image_to_data(img, output_type=Output.DICT)
+    # todo write this with pandas dataframe instead of simple dictionary
+    # image_as_dataframe: DataFrame = pytesseract.image_to_data(img, output_type=Output.DATAFRAME)
+
+    return imagedata
+
+
 if __name__ == "__main__":
     # todo 2.2 text region recovery
 
-    data_recognition(IMAGE_FILE)
+    pytesseract_imagedata = get_imagedata(IMAGE_FILE)
 
-    # load shared-file-format of corresponding file to be processed
+    # P_1_HORIZONTAL_WORD_SPACING_DISTANCE = determine_horizontal_spacing_distance(pytesseract_imagedata)
+    # P_3_VERTICAL_LINE_SPACING_DISTANCE =
 
-    # load image file
-
-    # recognize characters + their corresponding bounding boxes via tessaract or calamari
+    data_recognition(pytesseract_imagedata, img=cv2.imread(IMAGE_FILE))
 
     # todo 2.3 cell recovery
