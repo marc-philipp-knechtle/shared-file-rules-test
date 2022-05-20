@@ -4,7 +4,6 @@ import sys
 import pytesseract
 from cv2 import cv2
 from pytesseract import Output
-from pandas import DataFrame
 
 from loguru import logger
 
@@ -13,11 +12,11 @@ import copy
 logger.remove()
 logger.add(sys.stderr, level="DEBUG")
 
-IMAGE_FILE = "tests/fixtures/images/sciTSR-example(2).png"
+IMAGE_FILE = "tests/fixtures/images/1.4.scan-1.png"
 annotation_file = "tests/fixtures/test2/1.2.scan-1.xml.json"
 
 P_1_HORIZONTAL_WORD_SPACING_DISTANCE: int = 0
-P_3_VERTICAL_LINE_SPACING_DISTANCE: int = 20
+P_3_VERTICAL_LINE_SPACING_DISTANCE: int = 4
 
 
 def character_recognition(image_file: str):
@@ -29,7 +28,7 @@ def character_recognition(image_file: str):
     img = cv2.imread(image_file)
 
     height: int = img.shape[0]
-    width: int = img.shape[1]
+    # width: int = img.shape[1]
 
     imagedata = pytesseract.image_to_boxes(img, output_type=Output.DICT)
     word_count: int = len(imagedata['char'])
@@ -71,7 +70,7 @@ def data_recognition(image_file: str):
     # line_num = ?
     imagedata: dict = pytesseract.image_to_data(img, output_type=Output.DICT)
     # todo write this with pandas dataframe instead of simple dictionary
-    image_as_dataframe: DataFrame = pytesseract.image_to_data(img, output_type=Output.DATAFRAME)
+    # image_as_dataframe: DataFrame = pytesseract.image_to_data(img, output_type=Output.DATAFRAME)
 
     original_imagedata_dict = copy.deepcopy(imagedata)
     original_image = copy.deepcopy(img)
@@ -132,7 +131,7 @@ def merge_to_text_blocks(imagedata: dict, count_of_called: int) -> dict:
                 imagedata['left'][j], imagedata['top'][j], imagedata['width'][j], imagedata['height'][j])
             text2: str = imagedata['text'][j]
 
-            if p_1_word_spacing(y1, y2) \
+            if p_1_word_spacing(y1, y2, height1, height2) \
                     and p_2_vertical_projections(imagedata, x1, width1, x2, width2):
                 logger.debug(
                     "Merging bboxes with content text1: [" + text1 + "] and "
@@ -161,7 +160,7 @@ def merge_to_text_blocks(imagedata: dict, count_of_called: int) -> dict:
                 # These will filter out if that method has been run multiple times.
                 break
 
-            if p_3_line_spacing(x1, x2) \
+            if p_3_line_spacing(x1, x2, width1, width2) \
                     and p_4_horizontal_projections(imagedata, y1, height1, y2, height2):
                 logger.debug(
                     "Merging bboxes with content text1: [" + text1 + "] and "
@@ -202,14 +201,15 @@ def merge_to_text_blocks(imagedata: dict, count_of_called: int) -> dict:
     return imagedata
 
 
-def p_1_word_spacing(y1, y2) -> bool:
+def p_1_word_spacing(y1, y2, height1, height2) -> bool:
     """
     See corresponding rule in shigarov2016configurable
     on page 2
 
     # todo problem of this approach
     overlapping bounding boxes. The bounding boxes around words are not exact. There are often overlapping bboxes
-    e.g. the bbox from two different cells are crossing -> it's not clear where the bounding box is perfekt and where not
+    e.g. the bbox from two different cells are crossing
+    -> it's not clear where the bounding box is perfekt and where not
 
     :return: true if those two boxes should be merged according to rule p1
     """
@@ -221,10 +221,17 @@ def p_1_word_spacing(y1, y2) -> bool:
     # maybe make this value dependent on the general font size
     if abs(y1 - y2) < P_1_HORIZONTAL_WORD_SPACING_DISTANCE:
         return True
+    # y1 is above y2
+    if abs(y1 - (y2 + height2)) < P_1_HORIZONTAL_WORD_SPACING_DISTANCE:
+        return True
+    # y2 is above y1
+    if abs(y2 - (y1 + height1)) < P_1_HORIZONTAL_WORD_SPACING_DISTANCE:
+        return True
     return False
 
 
 def p_2_vertical_projections(imagedata: dict, x_1, width_1, x_2, width_2) -> bool:
+    # todo create the projections with the angle of the coordinate
     """
     see p2 in shigarov2016configurable
 
@@ -252,8 +259,16 @@ def p_2_vertical_projections(imagedata: dict, x_1, width_1, x_2, width_2) -> boo
     return False
 
 
-def p_3_line_spacing(x1, x2) -> bool:
+def p_3_line_spacing(x1, x2, width1: int, width2: int) -> bool:
+    # this is only the case if the bboxes are relatively small because the distance-difference to the right is not as
+    # much when considering the with of the cell
     if abs(x1 - x2) < P_3_VERTICAL_LINE_SPACING_DISTANCE:
+        return True
+    # x1 left of x2 and already merged
+    if abs((x1 + width1) - x2) < P_3_VERTICAL_LINE_SPACING_DISTANCE:
+        return True
+    # x2 is left of x1
+    if abs((x2 + width2) - x1) < P_3_VERTICAL_LINE_SPACING_DISTANCE:
         return True
     return False
 
@@ -338,7 +353,9 @@ def _merge_boxes(box1, box2) -> list:
     # box 1 upper y + box 2 upper y
     upper_new_y: int = max(box_1_point_2[1], box_2_point_2[1])
 
+    # noinspection PyTypeChecker
     width = abs(upper_new_x - lower_new_x)
+    # noinspection PyTypeChecker
     height = abs(upper_new_y - lower_new_y)
 
     return [lower_new_x,
