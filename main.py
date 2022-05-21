@@ -22,6 +22,8 @@ P_3_VERTICAL_LINE_SPACING_DISTANCE: int = 0
 P_1_DIVISION_FACTOR: float = 0.5
 P_3_DIVISION_FACTOR: float = 0.5
 
+# todo idea: make all detected cells white and run this algorithm again -> new detection of cells?
+
 
 def character_recognition(image_file: str):
     """
