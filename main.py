@@ -1,3 +1,4 @@
+import os
 import random
 import sys
 
@@ -12,7 +13,7 @@ import copy
 logger.remove()
 logger.add(sys.stderr, level="DEBUG")
 
-IMAGE_FILE = "tests/fixtures/images/sciTSR-example.png"
+IMAGE_FILE = "tests/fixtures/images/1.6.scan-1.png"
 annotation_file = "tests/fixtures/test2/1.2.scan-1.xml.json"
 
 P_1_HORIZONTAL_WORD_SPACING_DISTANCE: int = 0  # distance of words next to each other
@@ -145,10 +146,6 @@ def merge_to_text_blocks(imagedata: dict, count_of_called: int) -> dict:
                 # in another form
                 # These will filter out if that method has been run multiple times.
                 break
-
-            if text1 == "Reclassification":
-
-                print("Hello there")
 
             if p_3_line_spacing(y1, y2, height1, height2) \
                     and p_4_horizontal_projections(imagedata, y1, height1, y2, height2) \
@@ -430,10 +427,6 @@ def visualize_original_and_processed(original_image, processed_image, imagedata_
     cv2.destroyWindow('original')
 
 
-def get_average_cell_height(imagedata: dict):
-    pass
-
-
 def get_average_cell_width(imagedata: dict) -> int:
     imagedata_filtered = filter_empty_imagedata(imagedata)
     total_width: int = 0
@@ -488,12 +481,15 @@ def get_imagedata(image_filename: str) -> dict:
 
 
 if __name__ == "__main__":
-    # todo 2.2 text region recovery
-
+    logger.info("Started processing on: " + os.path.basename(IMAGE_FILE))
     pytesseract_imagedata = get_imagedata(IMAGE_FILE)
 
-    # P_1_HORIZONTAL_WORD_SPACING_DISTANCE = determine_horizontal_spacing_distance(pytesseract_imagedata)
-    # P_3_VERTICAL_LINE_SPACING_DISTANCE =
+    P_1_HORIZONTAL_WORD_SPACING_DISTANCE = determine_horizontal_spacing_distance(pytesseract_imagedata)
+    logger.info("Determined the P_1_HORIZONTAL_WORD_SPACING_DISTANCE to [" + str(
+        P_1_HORIZONTAL_WORD_SPACING_DISTANCE) + "] pts")
+    P_3_VERTICAL_LINE_SPACING_DISTANCE = determine_vertical_spacing_distance(pytesseract_imagedata)
+    logger.info(
+        "Determined the P_3_VERTICAL_LINE_SPACING_DISTANCE to [" + str(P_3_VERTICAL_LINE_SPACING_DISTANCE) + "] pts")
 
     data_recognition(pytesseract_imagedata, img=cv2.imread(IMAGE_FILE))
 
