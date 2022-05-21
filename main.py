@@ -12,10 +12,10 @@ import copy
 logger.remove()
 logger.add(sys.stderr, level="DEBUG")
 
-IMAGE_FILE = "tests/fixtures/images/1.4.scan-1.png"
+IMAGE_FILE = "tests/fixtures/images/sciTSR-example.png"
 annotation_file = "tests/fixtures/test2/1.2.scan-1.xml.json"
 
-P_1_HORIZONTAL_WORD_SPACING_DISTANCE: int = 0
+P_1_HORIZONTAL_WORD_SPACING_DISTANCE: int = 0  # distance of words next to each other
 P_3_VERTICAL_LINE_SPACING_DISTANCE: int = 0
 
 P_1_DIVISION_FACTOR: float = 0.5
@@ -56,6 +56,7 @@ def character_recognition(image_file: str):
 
 
 def data_recognition(imagedata: dict, img):
+    logger.warning("The Recognition has the (x=0, y=0) coordinates at the Top Left.")
     original_imagedata_dict = copy.deepcopy(imagedata)
     original_image = copy.deepcopy(img)
 
@@ -115,8 +116,9 @@ def merge_to_text_blocks(imagedata: dict, count_of_called: int) -> dict:
                 imagedata['left'][j], imagedata['top'][j], imagedata['width'][j], imagedata['height'][j])
             text2: str = imagedata['text'][j]
 
-            if p_1_word_spacing(y1, y2, height1, height2) \
-                    and p_2_vertical_projections(imagedata, x1, width1, x2, width2):
+            if p_1_word_spacing(x1, x2, width1, width2) \
+                    and p_2_vertical_projections(imagedata, x1, width1, x2, width2) \
+                    and p_1_2_same_y_level(y1, y2, height1, height2):
                 logger.debug(
                     "Merging bboxes with content text1: [" + text1 + "] and "
                                                                      "text2: [" + text2 + "] because of p_1 and p_2")
@@ -144,8 +146,13 @@ def merge_to_text_blocks(imagedata: dict, count_of_called: int) -> dict:
                 # These will filter out if that method has been run multiple times.
                 break
 
-            if p_3_line_spacing(x1, x2, width1, width2) \
-                    and p_4_horizontal_projections(imagedata, y1, height1, y2, height2):
+            if text1 == "Reclassification":
+
+                print("Hello there")
+
+            if p_3_line_spacing(y1, y2, height1, height2) \
+                    and p_4_horizontal_projections(imagedata, y1, height1, y2, height2) \
+                    and p_3_4_same_x_level(x1, x2, width1, width2):
                 logger.debug(
                     "Merging bboxes with content text1: [" + text1 + "] and "
                                                                      "text2: [" + text2 + "] because of p_3 and p_4")
@@ -185,7 +192,7 @@ def merge_to_text_blocks(imagedata: dict, count_of_called: int) -> dict:
     return imagedata
 
 
-def p_1_word_spacing(y1, y2, height1, height2) -> bool:
+def p_3_line_spacing(y1, y2, height1, height2) -> bool:
     """
     See corresponding rule in shigarov2016configurable
     on page 2
@@ -203,13 +210,12 @@ def p_1_word_spacing(y1, y2, height1, height2) -> bool:
     # the cells may mave a smaller difference to their neighbour
     # (if taken relative to the image size) if the table is big
     # maybe make this value dependent on the general font size
-    if abs(y1 - y2) < P_1_HORIZONTAL_WORD_SPACING_DISTANCE:
+
+    # cell 1 is above cell 2
+    if abs((y2 - height2) - y1) < P_3_VERTICAL_LINE_SPACING_DISTANCE:
         return True
-    # y1 is above y2
-    if abs(y1 - (y2 + height2)) < P_1_HORIZONTAL_WORD_SPACING_DISTANCE:
-        return True
-    # y2 is above y1
-    if abs(y2 - (y1 + height1)) < P_1_HORIZONTAL_WORD_SPACING_DISTANCE:
+    # cell 2 is above cell1
+    if abs((y1 - height1) - y2) < P_3_VERTICAL_LINE_SPACING_DISTANCE:
         return True
     return False
 
@@ -233,6 +239,9 @@ def p_2_vertical_projections(imagedata: dict, x_1, width_1, x_2, width_2) -> boo
     if there arent any common projection elements - these are elements which are horizontically bound together.
     These could be theoretically at the other end of the table.
 
+    anschaulich: was bedeutet es für hoeizontale zusammenfügung wenn eine vertikale zelle als peojektion existiert?
+    -> die beiden die zusammengefügt werden kommen save aus einer zelle
+
     :return:
     """
     vertical_projections_1: list = _get_vertical_projections(imagedata, x_1, width_1)
@@ -243,16 +252,34 @@ def p_2_vertical_projections(imagedata: dict, x_1, width_1, x_2, width_2) -> boo
     return False
 
 
-def p_3_line_spacing(x1, x2, width1: int, width2: int) -> bool:
+def p_1_word_spacing(x1, x2, width1: int, width2: int) -> bool:
     # this is only the case if the bboxes are relatively small because the distance-difference to the right is not as
     # much when considering the with of the cell
-    if abs(x1 - x2) < P_3_VERTICAL_LINE_SPACING_DISTANCE:
+    if abs(x1 - x2) < P_1_HORIZONTAL_WORD_SPACING_DISTANCE:
         return True
     # x1 left of x2 and already merged
-    if abs((x1 + width1) - x2) < P_3_VERTICAL_LINE_SPACING_DISTANCE:
+    if abs((x1 + width1) - x2) < P_1_HORIZONTAL_WORD_SPACING_DISTANCE:
         return True
     # x2 is left of x1
-    if abs((x2 + width2) - x1) < P_3_VERTICAL_LINE_SPACING_DISTANCE:
+    if abs((x2 + width2) - x1) < P_1_HORIZONTAL_WORD_SPACING_DISTANCE:
+        return True
+    return False
+
+
+def p_1_2_same_y_level(y1, y2, height1, height2) -> bool:
+    range_1: range = range(y1, y1 + height1)
+    range_2: range = range(y2, y2 + height2)
+
+    if len(set(range_1).intersection(range_2)) > (height1 + height2) / 4:
+        return True
+    return False
+
+
+def p_3_4_same_x_level(x1, x2, width1, width2) -> bool:
+    range_1: range = range(x1, x1 + width1)
+    range_2: range = range(x2, x2 + width2)
+
+    if len(set(range_1).intersection(range_2)) > (width1 + width2) / 4:
         return True
     return False
 
@@ -281,7 +308,7 @@ def _get_vertical_projections(imagedata: dict, x: int, width: int) -> list:
 
 def _get_horizontal_projections(imagedata: dict, y: int, height: int) -> list:
     horizontal_projection_indexes: list = []
-    range_to_match: range = range(y, y + height)
+    range_to_match: range = range(y, y - height)
     for i in range(len(imagedata['level'])):
         y_1: int = imagedata['top'][i]
         height_1: int = imagedata['height'][i]
@@ -428,13 +455,13 @@ def get_average_cell_height(imagedata: dict) -> int:
 def determine_horizontal_spacing_distance(imagedata: dict) -> int:
     average_cell_width = get_average_cell_width(imagedata)
     # noinspection PyTypeChecker
-    return round(average_cell_width/P_3_DIVISION_FACTOR)
+    return round(average_cell_width / P_3_DIVISION_FACTOR)
 
 
 def determine_vertical_spacing_distance(imagedata: dict) -> int:
     average_cell_height = get_average_cell_height(imagedata)
     # noinspection PyTypeChecker
-    return round(average_cell_height/P_1_DIVISION_FACTOR)
+    return round(average_cell_height / P_1_DIVISION_FACTOR)
 
 
 def get_imagedata(image_filename: str) -> dict:
