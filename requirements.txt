@@ -1,6 +1,8 @@
 pytesseract~=0.2.7
 opencv-python~=3.4
 
+-e shared-file-format/python
+
 defusedxml~=0.6.0
 cffi~=1.14.5
 PyQt5~=5.14.1
