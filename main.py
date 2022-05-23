@@ -1,26 +1,28 @@
+import argparse
+import json
 import os
 import random
 import sys
+import time
 
 import pytesseract
 from cv2 import cv2
 from pytesseract import Output
 
 from loguru import logger
+from docrecjson.elements import Document, PolygonRegion
 
 import copy
 
 logger.remove()
-logger.add(sys.stderr, level="DEBUG")
-
-IMAGE_FILE = "tests/fixtures/images/1.6.scan-1.png"
-annotation_file = "tests/fixtures/test2/1.2.scan-1.xml.json"
+logger.add(sys.stderr, level="INFO")
 
 P_1_HORIZONTAL_WORD_SPACING_DISTANCE: int = 0  # distance of words next to each other
 P_3_VERTICAL_LINE_SPACING_DISTANCE: int = 0
 
 P_1_DIVISION_FACTOR: float = 0.5
 P_3_DIVISION_FACTOR: float = 0.5
+
 
 # todo idea: make all detected cells white and run this algorithm again -> new detection of cells?
 
@@ -58,7 +60,7 @@ def character_recognition(image_file: str):
     cv2.waitKey(0)
 
 
-def data_recognition(imagedata: dict, img):
+def data_recognition(imagedata: dict, img, visualization: bool = False) -> dict:
     logger.warning("The Recognition has the (x=0, y=0) coordinates at the Top Left.")
     original_imagedata_dict = copy.deepcopy(imagedata)
     original_image = copy.deepcopy(img)
@@ -66,7 +68,10 @@ def data_recognition(imagedata: dict, img):
     imagedata = filter_empty_imagedata(imagedata)
     imagedata = merge_to_text_blocks(imagedata, count_of_called=1)
 
-    visualize_original_and_processed(original_image, img, original_imagedata_dict, imagedata)
+    if visualization:
+        visualize_original_and_processed(original_image, img, original_imagedata_dict, imagedata)
+
+    return imagedata
 
 
 def filter_empty_imagedata(imagedata: dict) -> dict:
@@ -434,6 +439,9 @@ def get_average_cell_width(imagedata: dict) -> int:
     total_width: int = 0
     for i in range(len(imagedata_filtered['level'])):
         total_width += imagedata_filtered['width'][i]
+
+    if total_width == 0:
+        return 1
     # noinspection PyTypeChecker
     return round(total_width / len(imagedata_filtered['level']))
 
@@ -443,6 +451,10 @@ def get_average_cell_height(imagedata: dict) -> int:
     total_height: int = 0
     for i in range(len(imagedata_filtered['level'])):
         total_height += imagedata_filtered['height'][i]
+
+    # this is the case if it was not possible for the system to detect any elements in this picture
+    if total_height == 0:
+        return 1
     # noinspection PyTypeChecker
     return round(total_height / len(imagedata_filtered['level']))
 
@@ -482,17 +494,129 @@ def get_imagedata(image_filename: str) -> dict:
     return imagedata
 
 
-if __name__ == "__main__":
-    logger.info("Started processing on: " + os.path.basename(IMAGE_FILE))
-    pytesseract_imagedata = get_imagedata(IMAGE_FILE)
+def create_shared_file_format(imagedata: dict, width: int, height: int, filename: str) -> Document:
+    document: Document = Document.empty(filename, original_image_size=(width, height))
 
+    document.add_metadata({"creator": "shigarov2016configurable rules"})
+
+    for i in range(len(imagedata['level'])):
+        (x, y, width, height, text) = (
+            imagedata['left'][i], imagedata['top'][i], imagedata['width'][i], imagedata['height'][i],
+            imagedata['text'][i])
+
+        cell_region_element: PolygonRegion = document.add_region(
+            [(x, y), (x + width, y), (x + width, y + height), (x, y + height)], "text")
+
+        document.add_text(text, cell_region_element)
+
+    return document
+
+
+def _get_image_width(filepath: str) -> int:
+    img = cv2.imread(filepath)
+    return img.shape[1]
+
+
+def _get_image_height(filepath: str) -> int:
+    img = cv2.imread(filepath)
+    return img.shape[0]
+
+
+def parse_arguments() -> argparse.Namespace:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-v", "--visualize",
+                        help="Shows you the shigarov2016configurable changes. Two images will appear: "
+                             "The raw word detection and the changes in merging this detection.",
+                        type=bool, default=False)
+    parser.add_argument("-e", "--extraction", help="Folder to monitor for new incoming extraction files.",
+                        type=str)
+    parser.add_argument("-ed", "--extractionDetected",
+                        help="Folder to move extracted, successfully detected files to.",
+                        type=str)
+    parser.add_argument("-ej", "--extractionJson",
+                        help="Specify a folder to save the extracted json Files into. "
+                             "Leave empty, if you don't want to save any shared-file-format json files",
+                        type=str, default="")
+
+    return parser.parse_args()
+
+
+def file_considered_duplicates(filepath: str) -> str:
+    """
+    :param filepath: a full filepath
+    :return: a new filepath if the specified filepath already exists, else the given filepath
+    """
+    counter: int = 1
+    filepath, file_extension = os.path.splitext(filepath)
+    base_filepath: str = filepath
+    while os.path.isfile(filepath + file_extension):
+        filepath = os.path.join(base_filepath + " (" + str(counter) + ")")
+        counter += 1
+    return filepath + file_extension
+
+
+def write_to_file(filepath: str, shared_file_format_document: Document):
+    if filepath is not None:
+        path_considered_duplicates: str = file_considered_duplicates(filepath)
+        with open(path_considered_duplicates, "w") as file:
+            json.dump(shared_file_format_document.to_dict(), file, indent=2)
+            logger.info("wrote processed contents into: [" + filepath + "]")
+
+
+def process_file(image_path: str, visualization: bool) -> Document:
+    logger.info("Started processing on: " + os.path.basename(image_path))
+    pytesseract_imagedata = get_imagedata(image_path)
+
+    global P_1_HORIZONTAL_WORD_SPACING_DISTANCE
     P_1_HORIZONTAL_WORD_SPACING_DISTANCE = determine_horizontal_spacing_distance(pytesseract_imagedata)
     logger.info("Determined the P_1_HORIZONTAL_WORD_SPACING_DISTANCE to [" + str(
         P_1_HORIZONTAL_WORD_SPACING_DISTANCE) + "] pts")
+    global P_3_VERTICAL_LINE_SPACING_DISTANCE
     P_3_VERTICAL_LINE_SPACING_DISTANCE = determine_vertical_spacing_distance(pytesseract_imagedata)
     logger.info(
         "Determined the P_3_VERTICAL_LINE_SPACING_DISTANCE to [" + str(P_3_VERTICAL_LINE_SPACING_DISTANCE) + "] pts")
 
-    data_recognition(pytesseract_imagedata, img=cv2.imread(IMAGE_FILE))
+    data: dict = data_recognition(pytesseract_imagedata, img=cv2.imread(image_path), visualization=visualization)
+
+    document: Document = create_shared_file_format(data, _get_image_width(image_path), _get_image_height(image_path),
+                                                   os.path.basename(image_path))
+
+    # logger.info(json.dumps(document.to_dict(), indent=4))
+    return document
+
+
+def move_to_folder(filepath: str, new_folder_location: str):
+    # todo maybe remove os.path.join... because filepath is already path
+    if not os.path.isfile(os.path.join(new_folder_location, os.path.basename(filepath))):
+        logger.debug("Moving [" + filepath + "] to [" + new_folder_location + "]")
+        os.rename(filepath, os.path.join(new_folder_location, os.path.basename(filepath)))
+    else:
+        move_to_folder(file_considered_duplicates(filepath), new_folder_location)
+
+
+def main(extraction_filepath: str, extraction_detected_filepath: str, extraction_json_filepath: str,
+         visualization: bool):
+    try:
+        while True:
+            for filename in os.listdir(extraction_filepath):
+                filepath = os.path.join(extraction_filepath, filename)
+                logger.info("Received image: [{}]", filepath)
+
+                document: Document = process_file(filepath, visualization)
+
+                write_to_file(os.path.join(extraction_json_filepath, filename + ".json"), document)
+
+                move_to_folder(filepath, extraction_detected_filepath)
+
+            time.sleep(2)
+    except KeyboardInterrupt:
+        exit(0)
+
+
+if __name__ == "__main__":
+    args: argparse.Namespace = parse_arguments()
+    logger.info("Waiting for new files...")
+
+    main(args.extraction, args.extractionDetected, args.extractionJson, args.visualize)
 
     # todo 2.3 cell recovery
