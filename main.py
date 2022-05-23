@@ -599,6 +599,10 @@ def main(extraction_filepath: str, extraction_detected_filepath: str, extraction
     try:
         while True:
             for filename in os.listdir(extraction_filepath):
+                if filename.startswith('.'):
+                    logger.info("Ignoring [" + str(filename) + "] because it's hidden.")
+                    continue
+
                 filepath = os.path.join(extraction_filepath, filename)
                 logger.info("Received image: [{}]", filepath)
 
