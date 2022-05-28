@@ -1,0 +1,858 @@
+{
+  "version": "docrec-2022-01-10",
+  "filename": "0908.1528v2.1.png",
+  "original_image_size": [
+    1241,
+    1754
+  ],
+  "meta": [
+    {
+      "oid": 1,
+      "data": {
+        "creator": "shigarov2016configurable rules"
+      }
+    }
+  ],
+  "content": [
+    {
+      "otype": "region",
+      "oid": 2,
+      "group": 1,
+      "region_type": "text",
+      "polygon": [
+        [
+          546,
+          770
+        ],
+        [
+          607,
+          770
+        ],
+        [
+          607,
+          790
+        ],
+        [
+          546,
+          790
+        ]
+      ]
+    },
+    {
+      "otype": "text",
+      "oid": 3,
+      "group": 1,
+      "text": "trains/"
+    },
+    {
+      "otype": "region",
+      "oid": 4,
+      "group": 2,
+      "region_type": "text",
+      "polygon": [
+        [
+          639,
+          771
+        ],
+        [
+          737,
+          771
+        ],
+        [
+          737,
+          789
+        ],
+        [
+          639,
+          789
+        ]
+      ]
+    },
+    {
+      "otype": "text",
+      "oid": 5,
+      "group": 2,
+      "text": "clementary"
+    },
+    {
+      "otype": "region",
+      "oid": 6,
+      "group": 3,
+      "region_type": "text",
+      "polygon": [
+        [
+          778,
+          771
+        ],
+        [
+          917,
+          771
+        ],
+        [
+          917,
+          789
+        ],
+        [
+          778,
+          789
+        ]
+      ]
+    },
+    {
+      "otype": "text",
+      "oid": 7,
+      "group": 3,
+      "text": "time-dependent"
+    },
+    {
+      "otype": "region",
+      "oid": 8,
+      "group": 4,
+      "region_type": "text",
+      "polygon": [
+        [
+          958,
+          771
+        ],
+        [
+          1020,
+          771
+        ],
+        [
+          1020,
+          785
+        ],
+        [
+          958,
+          785
+        ]
+      ]
+    },
+    {
+      "otype": "text",
+      "oid": 9,
+      "group": 4,
+      "text": "station"
+    },
+    {
+      "otype": "region",
+      "oid": 10,
+      "group": 5,
+      "region_type": "text",
+      "polygon": [
+        [
+          292,
+          796
+        ],
+        [
+          361,
+          796
+        ],
+        [
+          361,
+          810
+        ],
+        [
+          292,
+          810
+        ]
+      ]
+    },
+    {
+      "otype": "text",
+      "oid": 11,
+      "group": 5,
+      "text": "network"
+    },
+    {
+      "otype": "region",
+      "oid": 12,
+      "group": 6,
+      "region_type": "text",
+      "polygon": [
+        [
+          447,
+          796
+        ],
+        [
+          517,
+          796
+        ],
+        [
+          517,
+          810
+        ],
+        [
+          447,
+          810
+        ]
+      ]
+    },
+    {
+      "otype": "text",
+      "oid": 13,
+      "group": 6,
+      "text": "stations"
+    },
+    {
+      "otype": "region",
+      "oid": 14,
+      "group": 7,
+      "region_type": "text",
+      "polygon": [
+        [
+          560,
+          796
+        ],
+        [
+          607,
+          796
+        ],
+        [
+          607,
+          810
+        ],
+        [
+          560,
+          810
+        ]
+      ]
+    },
+    {
+      "otype": "text",
+      "oid": 15,
+      "group": 7,
+      "text": "buses"
+    },
+    {
+      "otype": "region",
+      "oid": 16,
+      "group": 8,
+      "region_type": "text",
+      "polygon": [
+        [
+          633,
+          796
+        ],
+        [
+          737,
+          796
+        ],
+        [
+          737,
+          810
+        ],
+        [
+          633,
+          810
+        ]
+      ]
+    },
+    {
+      "otype": "text",
+      "oid": 17,
+      "group": 8,
+      "text": "connections"
+    },
+    {
+      "otype": "region",
+      "oid": 18,
+      "group": 9,
+      "region_type": "text",
+      "polygon": [
+        [
+          972,
+          796
+        ],
+        [
+          1020,
+          796
+        ],
+        [
+          1020,
+          814
+        ],
+        [
+          972,
+          814
+        ]
+      ]
+    },
+    {
+      "otype": "text",
+      "oid": 19,
+      "group": 9,
+      "text": "edges"
+    },
+    {
+      "otype": "region",
+      "oid": 20,
+      "group": 10,
+      "region_type": "text",
+      "polygon": [
+        [
+          292,
+          823
+        ],
+        [
+          420,
+          823
+        ],
+        [
+          420,
+          841
+        ],
+        [
+          292,
+          841
+        ]
+      ]
+    },
+    {
+      "otype": "text",
+      "oid": 21,
+      "group": 10,
+      "text": "eur-longdist"
+    },
+    {
+      "otype": "region",
+      "oid": 22,
+      "group": 11,
+      "region_type": "text",
+      "polygon": [
+        [
+          463,
+          822
+        ],
+        [
+          517,
+          822
+        ],
+        [
+          517,
+          837
+        ],
+        [
+          463,
+          837
+        ]
+      ]
+    },
+    {
+      "otype": "text",
+      "oid": 23,
+      "group": 11,
+      "text": "30517"
+    },
+    {
+      "otype": "region",
+      "oid": 24,
+      "group": 12,
+      "region_type": "text",
+      "polygon": [
+        [
+          544,
+          822
+        ],
+        [
+          607,
+          822
+        ],
+        [
+          607,
+          837
+        ],
+        [
+          544,
+          837
+        ]
+      ]
+    },
+    {
+      "otype": "text",
+      "oid": 25,
+      "group": 12,
+      "text": "167299"
+    },
+    {
+      "otype": "region",
+      "oid": 26,
+      "group": 13,
+      "region_type": "text",
+      "polygon": [
+        [
+          660,
+          822
+        ],
+        [
+          737,
+          822
+        ],
+        [
+          737,
+          837
+        ],
+        [
+          660,
+          837
+        ]
+      ]
+    },
+    {
+      "otype": "text",
+      "oid": 27,
+      "group": 13,
+      "text": "1669660"
+    },
+    {
+      "otype": "region",
+      "oid": 28,
+      "group": 14,
+      "region_type": "text",
+      "polygon": [
+        [
+          966,
+          822
+        ],
+        [
+          1018,
+          822
+        ],
+        [
+          1018,
+          837
+        ],
+        [
+          966,
+          837
+        ]
+      ]
+    },
+    {
+      "otype": "text",
+      "oid": 29,
+      "group": 14,
+      "text": "88091"
+    },
+    {
+      "otype": "region",
+      "oid": 30,
+      "group": 15,
+      "region_type": "text",
+      "polygon": [
+        [
+          292,
+          836
+        ],
+        [
+          398,
+          836
+        ],
+        [
+          398,
+          871
+        ],
+        [
+          292,
+          871
+        ]
+      ]
+    },
+    {
+      "otype": "text",
+      "oid": 31,
+      "group": 15,
+      "text": "ger-local1"
+    },
+    {
+      "otype": "region",
+      "oid": 32,
+      "group": 16,
+      "region_type": "text",
+      "polygon": [
+        [
+          464,
+          847
+        ],
+        [
+          516,
+          847
+        ],
+        [
+          516,
+          862
+        ],
+        [
+          464,
+          862
+        ]
+      ]
+    },
+    {
+      "otype": "text",
+      "oid": 33,
+      "group": 16,
+      "text": "12069"
+    },
+    {
+      "otype": "region",
+      "oid": 34,
+      "group": 17,
+      "region_type": "text",
+      "polygon": [
+        [
+          553,
+          847
+        ],
+        [
+          607,
+          847
+        ],
+        [
+          607,
+          862
+        ],
+        [
+          553,
+          862
+        ]
+      ]
+    },
+    {
+      "otype": "text",
+      "oid": 35,
+      "group": 17,
+      "text": "33227"
+    },
+    {
+      "otype": "region",
+      "oid": 36,
+      "group": 18,
+      "region_type": "text",
+      "polygon": [
+        [
+          673,
+          847
+        ],
+        [
+          737,
+          847
+        ],
+        [
+          737,
+          862
+        ],
+        [
+          673,
+          862
+        ]
+      ]
+    },
+    {
+      "otype": "text",
+      "oid": 37,
+      "group": 18,
+      "text": "680176"
+    },
+    {
+      "otype": "region",
+      "oid": 38,
+      "group": 19,
+      "region_type": "text",
+      "polygon": [
+        [
+          966,
+          847
+        ],
+        [
+          1019,
+          847
+        ],
+        [
+          1019,
+          862
+        ],
+        [
+          966,
+          862
+        ]
+      ]
+    },
+    {
+      "otype": "text",
+      "oid": 39,
+      "group": 19,
+      "text": "33473"
+    },
+    {
+      "otype": "region",
+      "oid": 40,
+      "group": 20,
+      "region_type": "text",
+      "polygon": [
+        [
+          279,
+          860
+        ],
+        [
+          399,
+          860
+        ],
+        [
+          399,
+          895
+        ],
+        [
+          279,
+          895
+        ]
+      ]
+    },
+    {
+      "otype": "text",
+      "oid": 41,
+      "group": 20,
+      "text": "ger-local2"
+    },
+    {
+      "otype": "region",
+      "oid": 42,
+      "group": 21,
+      "region_type": "text",
+      "polygon": [
+        [
+          473,
+          871
+        ],
+        [
+          516,
+          871
+        ],
+        [
+          516,
+          886
+        ],
+        [
+          473,
+          886
+        ]
+      ]
+    },
+    {
+      "otype": "text",
+      "oid": 43,
+      "group": 21,
+      "text": "9902"
+    },
+    {
+      "otype": "region",
+      "oid": 44,
+      "group": 22,
+      "region_type": "text",
+      "polygon": [
+        [
+          553,
+          871
+        ],
+        [
+          607,
+          871
+        ],
+        [
+          607,
+          886
+        ],
+        [
+          553,
+          886
+        ]
+      ]
+    },
+    {
+      "otype": "text",
+      "oid": 45,
+      "group": 22,
+      "text": "60889}"
+    },
+    {
+      "otype": "region",
+      "oid": 46,
+      "group": 23,
+      "region_type": "text",
+      "polygon": [
+        [
+          660,
+          871
+        ],
+        [
+          737,
+          871
+        ],
+        [
+          737,
+          886
+        ],
+        [
+          660,
+          886
+        ]
+      ]
+    },
+    {
+      "otype": "text",
+      "oid": 47,
+      "group": 23,
+      "text": "1128465"
+    },
+    {
+      "otype": "region",
+      "oid": 48,
+      "group": 24,
+      "region_type": "text",
+      "polygon": [
+        [
+          966,
+          871
+        ],
+        [
+          1019,
+          871
+        ],
+        [
+          1019,
+          886
+        ],
+        [
+          966,
+          886
+        ]
+      ]
+    },
+    {
+      "otype": "text",
+      "oid": 49,
+      "group": 24,
+      "text": "26678"
+    },
+    {
+      "otype": "region",
+      "oid": 50,
+      "group": 25,
+      "region_type": "text",
+      "polygon": [
+        [
+          778,
+          796
+        ],
+        [
+          932,
+          796
+        ],
+        [
+          932,
+          814
+        ],
+        [
+          778,
+          814
+        ]
+      ]
+    },
+    {
+      "otype": "text",
+      "oid": 51,
+      "group": 25,
+      "text": "_nodes__edges"
+    },
+    {
+      "otype": "region",
+      "oid": 52,
+      "group": 26,
+      "region_type": "text",
+      "polygon": [
+        [
+          764,
+          822
+        ],
+        [
+          932,
+          822
+        ],
+        [
+          932,
+          837
+        ],
+        [
+          764,
+          837
+        ]
+      ]
+    },
+    {
+      "otype": "text",
+      "oid": 53,
+      "group": 26,
+      "text": "5359631456901"
+    },
+    {
+      "otype": "region",
+      "oid": 54,
+      "group": 27,
+      "region_type": "text",
+      "polygon": [
+        [
+          764,
+          847
+        ],
+        [
+          932,
+          847
+        ],
+        [
+          932,
+          862
+        ],
+        [
+          764,
+          862
+        ]
+      ]
+    },
+    {
+      "otype": "text",
+      "oid": 55,
+      "group": 27,
+      "text": "225797600690"
+    },
+    {
+      "otype": "region",
+      "oid": 56,
+      "group": 28,
+      "region_type": "text",
+      "polygon": [
+        [
+          765,
+          871
+        ],
+        [
+          932,
+          871
+        ],
+        [
+          932,
+          886
+        ],
+        [
+          765,
+          886
+        ]
+      ]
+    },
+    {
+      "otype": "text",
+      "oid": 57,
+      "group": 28,
+      "text": "183207704673"
+    }
+  ]
+}
