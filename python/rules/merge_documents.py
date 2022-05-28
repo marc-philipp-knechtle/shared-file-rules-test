@@ -2,6 +2,8 @@ import argparse
 import glob
 import json
 import os.path
+import sys
+
 from typing import List
 
 from loguru import logger
@@ -103,7 +105,7 @@ def merge_documents(document_1: Document, document_2: Document) -> Document:
         else:
             result.add_region(area=content_object.polygon, region_type="text")
             max_iou_element: PolygonRegion
-            max_iou_value: float = 0
+            max_iou_value: float = -1
             for intersecting_cell in intersecting_cells:
                 intersection_over_union = iou.cell_intersection_over_union(content_object,
                                                                            intersecting_cell)  # noqa we know that these are PolygonRegions because we filtered the polygon reginos already
