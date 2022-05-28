@@ -32,7 +32,6 @@ class Test(TestCase):
         result: Document = md.merge_documents(_load_document(SIMPLE_ANNOTATION_1),
                                               _load_document(SIMPLE_ANNOTATION_1))
         annotation: Document = _load_document(SIMPLE_ANNOTATION_1)
-        # todo deepdiff test issues with other id's -> exclude metadata + id values from this computation
 
         exclude_oid = re.compile(r"root\['content']\[\d+]\['oid']")
         exclude_group = re.compile(r"root\['content']\[\d+]\['group']")
