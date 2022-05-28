@@ -102,7 +102,7 @@ def merge_documents(document_1: Document, document_2: Document) -> Document:
 
         else:
             result.add_region(area=content_object.polygon, region_type="text")
-            max_iou_element: PolygonRegion = PolygonRegion()
+            max_iou_element: PolygonRegion
             max_iou_value: float = 0
             for intersecting_cell in intersecting_cells:
                 intersection_over_union = iou.cell_intersection_over_union(content_object,
@@ -110,7 +110,7 @@ def merge_documents(document_1: Document, document_2: Document) -> Document:
                 if intersection_over_union > max_iou_value:
                     max_iou_element = intersecting_cell
 
-            prediction_2_viewed_oid.append(max_iou_element.oid)
+            prediction_2_viewed_oid.append(max_iou_element.oid) # noqa max_iou_element is always assigned
 
     for content_object in polygon_content_d2:
         if content_object.oid not in prediction_2_viewed_oid:
