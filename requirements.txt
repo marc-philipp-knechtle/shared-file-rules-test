@@ -3,6 +3,11 @@ opencv-python~=3.4
 
 -e shared-file-format/python
 -e shared-file-evaluations/python
+-e python
+
+shapely
+
+deepdiff
 
 defusedxml~=0.6.0
 cffi~=1.14.5
