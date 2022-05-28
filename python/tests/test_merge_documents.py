@@ -22,7 +22,9 @@ def _load_document(filepath: str) -> Document:
 class Test(TestCase):
     def test_merge_equal_files(self):
         """
-        The merge operation of two equal files should result in the same document
+        The merge operation of two equal files should result in the same document.
+        The intersecting cell areas will surely be detected, but the average cell are from two equal cell areas is the
+        same cell area.
         :return:
         """
 
