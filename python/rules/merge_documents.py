@@ -6,7 +6,7 @@ from typing import List
 
 from loguru import logger
 
-from docrecjson.elements import Document, ContentObject, PolygonRegion
+from docrecjson.elements import Document, ContentObject, PolygonRegion, Text
 from docrecjson import decoder
 
 import evaluations.iou as iou
@@ -14,7 +14,7 @@ import evaluations.iou as iou
 from shapely.geometry import Polygon
 
 
-def _load_document(filepath: str) -> Document: # noqa removing this warning because dup originates from submodule
+def _load_document(filepath: str) -> Document:  # noqa removing this warning because dup originates from submodule
     with open(filepath) as json_data:
         json_annotation = json.load(json_data)
 
@@ -64,16 +64,11 @@ def merge_bounding_boxes():
 
 
 def merge_documents(document_1: Document, document_2: Document) -> Document:
-    if document_1.filename != document_2.filename:
-        raise RuntimeError("No matching filename between two document versions.")
-    if document_1.original_image_size != document_2.original_image_size:
-        raise RuntimeError("No matching image size between the two document versions.")
+    _check_documents(document_1, document_2)
 
     result: Document = Document.empty(filename=document_1.filename, original_image_size=document_1.original_image_size)
-    result.add_existing_metadata(document_1.meta)
-    result.add_existing_metadata(document_2.meta)
 
-    result.add_metadata({"creator": "merge-documents"})
+    _merge_metadata(document_1, document_2, result)
 
     polygon_content_d1 = [x for x in document_1.content if type(x) == PolygonRegion]
     polygon_content_d2 = [x for x in document_2.content if type(x) == PolygonRegion]
@@ -81,19 +76,37 @@ def merge_documents(document_1: Document, document_2: Document) -> Document:
     prediction_2_viewed_oid: list = []
 
     for content_object in polygon_content_d1:
-        intersecting_cells = get_intersecting_cells(content_object, polygon_content_d2) # noqa we filter this type previoulsy
+        intersecting_cells = get_intersecting_cells(content_object,
+                                                    polygon_content_d2)  # noqa we filter this type previoulsy
 
         if len(intersecting_cells) == 0:
-            result.add_region(area=content_object.polygon, region_type="text")
+            group_ref = result.add_region(area=content_object.polygon, region_type="text")
+
+            group_elements: list = document_1.get_group_elements(content_object)
+            non_polygon_region_group_elements: list = list(filter(lambda x: type(x) != PolygonRegion, group_elements))
+
+            for element in non_polygon_region_group_elements:
+                if type(element) == Text:
+                    result.add_text(element.text, group_ref)
+
         elif len(intersecting_cells) == 1:
-            result.add_region(area=content_object.polygon, region_type="text")
+            group_ref = result.add_region(area=content_object.polygon, region_type="text")
             prediction_2_viewed_oid.append(intersecting_cells[0].oid)
+
+            group_elements: list = document_1.get_group_elements(content_object)
+            non_polygon_region_group_elements: list = list(filter(lambda x: type(x) != PolygonRegion, group_elements))
+
+            for element in non_polygon_region_group_elements:
+                if type(element) == Text:
+                    result.add_text(element.text, group_ref)
+
         else:
             result.add_region(area=content_object.polygon, region_type="text")
-            max_iou_element: PolygonRegion
+            max_iou_element: PolygonRegion = PolygonRegion()
             max_iou_value: float = 0
             for intersecting_cell in intersecting_cells:
-                intersection_over_union = iou.cell_intersection_over_union(content_object, intersecting_cell) # noqa we know that these are PolygonRegions because we filtered the polygon reginos already
+                intersection_over_union = iou.cell_intersection_over_union(content_object,
+                                                                           intersecting_cell)  # noqa we know that these are PolygonRegions because we filtered the polygon reginos already
                 if intersection_over_union > max_iou_value:
                     max_iou_element = intersecting_cell
 
@@ -104,6 +117,19 @@ def merge_documents(document_1: Document, document_2: Document) -> Document:
             result.add_region(area=content_object.polygon, region_type="text")
 
     return result
+
+
+def _merge_metadata(document_1, document_2, result):
+    result.add_existing_metadata(document_1.meta)
+    result.add_existing_metadata(document_2.meta)
+    result.add_metadata({"creator": "merge-documents"})
+
+
+def _check_documents(document_1, document_2):
+    if document_1.filename != document_2.filename:
+        raise RuntimeError("No matching filename between two document versions.")
+    if document_1.original_image_size != document_2.original_image_size:
+        raise RuntimeError("No matching image size between the two document versions.")
 
 
 def main(prediction_dir_1: str, prediction_dir_2: str, output_dir: str):
