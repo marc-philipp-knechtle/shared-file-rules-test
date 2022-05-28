@@ -1,0 +1,54 @@
+{
+  "version": "docrec-2022-01-10",
+  "filename": "dummy filename",
+  "original_image_size": [
+    1241,
+    1754
+  ],
+  "meta": [
+    {
+      "oid": 1,
+      "data": {
+        "creator": "shared-file-converter"
+      }
+    },
+    {
+      "oid": 2,
+      "data": {
+        "creator": "sciTSR"
+      }
+    }
+  ],
+  "content": [
+    {
+      "otype": "region",
+      "oid": 3,
+      "group": 1,
+      "region_type": "text",
+      "polygon": [
+        [
+          296,
+          775
+        ],
+        [
+          388,
+          775
+        ],
+        [
+          388,
+          765
+        ],
+        [
+          296,
+          765
+        ]
+      ]
+    },
+    {
+      "otype": "text",
+      "oid": 4,
+      "group": 1,
+      "text": "DataSet"
+    }
+  ]
+}
