@@ -1,0 +1,654 @@
+{
+  "version": "cascade-tab-net",
+  "filename": "0908.1528v2.1.png",
+  "original_image_size": [
+    1241,
+    1754
+  ],
+  "content": [
+    {
+      "otype": "region",
+      "oid": 0,
+      "region_type": "unknown",
+      "polygon": [
+        [
+          866,
+          868
+        ],
+        [
+          931,
+          868
+        ],
+        [
+          931,
+          884
+        ],
+        [
+          866,
+          884
+        ]
+      ]
+    },
+    {
+      "otype": "region",
+      "oid": 1,
+      "region_type": "unknown",
+      "polygon": [
+        [
+          963,
+          868
+        ],
+        [
+          1019,
+          868
+        ],
+        [
+          1019,
+          885
+        ],
+        [
+          963,
+          885
+        ]
+      ]
+    },
+    {
+      "otype": "region",
+      "oid": 2,
+      "region_type": "unknown",
+      "polygon": [
+        [
+          288,
+          871
+        ],
+        [
+          398,
+          871
+        ],
+        [
+          398,
+          886
+        ],
+        [
+          288,
+          886
+        ]
+      ]
+    },
+    {
+      "otype": "region",
+      "oid": 3,
+      "region_type": "unknown",
+      "polygon": [
+        [
+          658,
+          868
+        ],
+        [
+          736,
+          868
+        ],
+        [
+          736,
+          884
+        ],
+        [
+          658,
+          884
+        ]
+      ]
+    },
+    {
+      "otype": "region",
+      "oid": 4,
+      "region_type": "unknown",
+      "polygon": [
+        [
+          763,
+          868
+        ],
+        [
+          826,
+          868
+        ],
+        [
+          826,
+          884
+        ],
+        [
+          763,
+          884
+        ]
+      ]
+    },
+    {
+      "otype": "region",
+      "oid": 5,
+      "region_type": "unknown",
+      "polygon": [
+        [
+          962,
+          844
+        ],
+        [
+          1018,
+          844
+        ],
+        [
+          1018,
+          860
+        ],
+        [
+          962,
+          860
+        ]
+      ]
+    },
+    {
+      "otype": "region",
+      "oid": 6,
+      "region_type": "unknown",
+      "polygon": [
+        [
+          288,
+          846
+        ],
+        [
+          394,
+          846
+        ],
+        [
+          394,
+          862
+        ],
+        [
+          288,
+          862
+        ]
+      ]
+    },
+    {
+      "otype": "region",
+      "oid": 7,
+      "region_type": "unknown",
+      "polygon": [
+        [
+          865,
+          844
+        ],
+        [
+          931,
+          844
+        ],
+        [
+          931,
+          861
+        ],
+        [
+          865,
+          861
+        ]
+      ]
+    },
+    {
+      "otype": "region",
+      "oid": 8,
+      "region_type": "unknown",
+      "polygon": [
+        [
+          759,
+          843
+        ],
+        [
+          826,
+          843
+        ],
+        [
+          826,
+          861
+        ],
+        [
+          759,
+          861
+        ]
+      ]
+    },
+    {
+      "otype": "region",
+      "oid": 9,
+      "region_type": "unknown",
+      "polygon": [
+        [
+          550,
+          869
+        ],
+        [
+          605,
+          869
+        ],
+        [
+          605,
+          884
+        ],
+        [
+          550,
+          884
+        ]
+      ]
+    },
+    {
+      "otype": "region",
+      "oid": 10,
+      "region_type": "unknown",
+      "polygon": [
+        [
+          669,
+          844
+        ],
+        [
+          736,
+          844
+        ],
+        [
+          736,
+          861
+        ],
+        [
+          669,
+          861
+        ]
+      ]
+    },
+    {
+      "otype": "region",
+      "oid": 11,
+      "region_type": "unknown",
+      "polygon": [
+        [
+          964,
+          820
+        ],
+        [
+          1016,
+          820
+        ],
+        [
+          1016,
+          835
+        ],
+        [
+          964,
+          835
+        ]
+      ]
+    },
+    {
+      "otype": "region",
+      "oid": 12,
+      "region_type": "unknown",
+      "polygon": [
+        [
+          549,
+          845
+        ],
+        [
+          605,
+          845
+        ],
+        [
+          605,
+          860
+        ],
+        [
+          549,
+          860
+        ]
+      ]
+    },
+    {
+      "otype": "region",
+      "oid": 13,
+      "region_type": "unknown",
+      "polygon": [
+        [
+          851,
+          820
+        ],
+        [
+          930,
+          820
+        ],
+        [
+          930,
+          836
+        ],
+        [
+          851,
+          836
+        ]
+      ]
+    },
+    {
+      "otype": "region",
+      "oid": 14,
+      "region_type": "unknown",
+      "polygon": [
+        [
+          658,
+          819
+        ],
+        [
+          736,
+          819
+        ],
+        [
+          736,
+          836
+        ],
+        [
+          658,
+          836
+        ]
+      ]
+    },
+    {
+      "otype": "region",
+      "oid": 15,
+      "region_type": "unknown",
+      "polygon": [
+        [
+          760,
+          819
+        ],
+        [
+          826,
+          819
+        ],
+        [
+          826,
+          836
+        ],
+        [
+          760,
+          836
+        ]
+      ]
+    },
+    {
+      "otype": "region",
+      "oid": 16,
+      "region_type": "unknown",
+      "polygon": [
+        [
+          288,
+          821
+        ],
+        [
+          419,
+          821
+        ],
+        [
+          419,
+          839
+        ],
+        [
+          288,
+          839
+        ]
+      ]
+    },
+    {
+      "otype": "region",
+      "oid": 17,
+      "region_type": "unknown",
+      "polygon": [
+        [
+          469,
+          869
+        ],
+        [
+          516,
+          869
+        ],
+        [
+          516,
+          884
+        ],
+        [
+          469,
+          884
+        ]
+      ]
+    },
+    {
+      "otype": "region",
+      "oid": 18,
+      "region_type": "unknown",
+      "polygon": [
+        [
+          459,
+          819
+        ],
+        [
+          514,
+          819
+        ],
+        [
+          514,
+          836
+        ],
+        [
+          459,
+          836
+        ]
+      ]
+    },
+    {
+      "otype": "region",
+      "oid": 19,
+      "region_type": "unknown",
+      "polygon": [
+        [
+          542,
+          819
+        ],
+        [
+          605,
+          819
+        ],
+        [
+          605,
+          836
+        ],
+        [
+          542,
+          836
+        ]
+      ]
+    },
+    {
+      "otype": "region",
+      "oid": 20,
+      "region_type": "unknown",
+      "polygon": [
+        [
+          461,
+          844
+        ],
+        [
+          514,
+          844
+        ],
+        [
+          514,
+          860
+        ],
+        [
+          461,
+          860
+        ]
+      ]
+    },
+    {
+      "otype": "region",
+      "oid": 21,
+      "region_type": "unknown",
+      "polygon": [
+        [
+          443,
+          795
+        ],
+        [
+          516,
+          795
+        ],
+        [
+          516,
+          811
+        ],
+        [
+          443,
+          811
+        ]
+      ]
+    },
+    {
+      "otype": "region",
+      "oid": 22,
+      "region_type": "unknown",
+      "polygon": [
+        [
+          968,
+          793
+        ],
+        [
+          1018,
+          793
+        ],
+        [
+          1018,
+          812
+        ],
+        [
+          968,
+          812
+        ]
+      ]
+    },
+    {
+      "otype": "region",
+      "oid": 23,
+      "region_type": "unknown",
+      "polygon": [
+        [
+          772,
+          768
+        ],
+        [
+          920,
+          768
+        ],
+        [
+          920,
+          806
+        ],
+        [
+          772,
+          806
+        ]
+      ]
+    },
+    {
+      "otype": "region",
+      "oid": 24,
+      "region_type": "unknown",
+      "polygon": [
+        [
+          956,
+          770
+        ],
+        [
+          1017,
+          770
+        ],
+        [
+          1017,
+          787
+        ],
+        [
+          956,
+          787
+        ]
+      ]
+    },
+    {
+      "otype": "region",
+      "oid": 25,
+      "region_type": "unknown",
+      "polygon": [
+        [
+          631,
+          769
+        ],
+        [
+          736,
+          769
+        ],
+        [
+          736,
+          812
+        ],
+        [
+          631,
+          812
+        ]
+      ]
+    },
+    {
+      "otype": "region",
+      "oid": 26,
+      "region_type": "unknown",
+      "polygon": [
+        [
+          543,
+          769
+        ],
+        [
+          606,
+          769
+        ],
+        [
+          606,
+          810
+        ],
+        [
+          543,
+          810
+        ]
+      ]
+    },
+    {
+      "otype": "region",
+      "oid": 27,
+      "region_type": "unknown",
+      "polygon": [
+        [
+          289,
+          796
+        ],
+        [
+          362,
+          796
+        ],
+        [
+          362,
+          811
+        ],
+        [
+          289,
+          811
+        ]
+      ]
+    }
+  ]
+}

@@ -2,7 +2,6 @@ import argparse
 import glob
 import json
 import os.path
-import sys
 
 from typing import List
 
@@ -112,7 +111,7 @@ def merge_documents(document_1: Document, document_2: Document) -> Document:
                 if intersection_over_union > max_iou_value:
                     max_iou_element = intersecting_cell
 
-            prediction_2_viewed_oid.append(max_iou_element.oid) # noqa max_iou_element is always assigned
+            prediction_2_viewed_oid.append(max_iou_element.oid)  # noqa max_iou_element is always assigned
 
     for content_object in polygon_content_d2:
         if content_object.oid not in prediction_2_viewed_oid:

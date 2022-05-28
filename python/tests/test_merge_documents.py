@@ -51,3 +51,20 @@ class Test(TestCase):
         Intersection over Union.
         """
         pass
+
+    def test_complex_merge(self):
+        cascade_tab_net_annotation: str = \
+            "../../tests/fixtures/annotations/merge-documents/test1/cascade-tab-net-annotation.json"
+        shigarov2016configurable_annotation: str = \
+            "../../tests/fixtures/annotations/merge-documents/test1/shigarov2016configurable-annotation.json"
+
+        result: Document = md.merge_documents(_load_document(cascade_tab_net_annotation),
+                                              _load_document(shigarov2016configurable_annotation))
+        annotation: Document = _load_document(SIMPLE_ANNOTATION_1)
+
+        exclude_oid = re.compile(r"root\['content']\[\d+]\['oid']")
+        exclude_group = re.compile(r"root\['content']\[\d+]\['group']")
+        ddiff: DeepDiff = DeepDiff(annotation.to_dict(), result.to_dict(), ignore_order=True,
+                                   exclude_paths=["root['meta']"], exclude_regex_paths=[exclude_oid, exclude_group])
+        # todo create result fixture once the merge algorithm is ready. Not doing this, because currently WIP
+        assert ddiff != {}
